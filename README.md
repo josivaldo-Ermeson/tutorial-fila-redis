@@ -419,7 +419,7 @@ for (const Classe of Object.values(implementacoes)) medir(Classe, 10_000);
 
 const resultados = [];
 for (const n of tamanhos) {
-  for (const [nome, Classe] of Object.entries(implementacoes)) {
+  for (const [nome, Classe] of Object.en![alt text](image.png)tries(implementacoes)) {
     const medidas = Array.from({ length: REPETICOES }, () => medir(Classe, n));
     resultados.push({
       fila: nome,
@@ -439,7 +439,7 @@ O script inteiro roda em cerca de 2 segundos. Evite passar de 80 mil itens: no t
 1. Na mesma pasta, reúna `fila-array.js`, `fila-encadeada.js` e `comparar.js`, com `"type": "module"` no `package.json`.
 2. Rode `node comparar.js` três vezes e anote na tabela abaixo os valores da última execução.
 3. Numa planilha, faça um gráfico de linhas com n no eixo horizontal e o tempo de desenfileirar no vertical, uma linha por implementação.
-4. Responda às perguntas de discussão.
+4. Responda às perguntas de discussão.alt text
 
 | n | FilaArray: enfileirar (ms) | FilaArray: desenfileirar (ms) | FilaEncadeada: enfileirar (ms) | FilaEncadeada: desenfileirar (ms) |
 | --- | --- | --- | --- | --- |
@@ -1408,6 +1408,15 @@ O arquivo `redis.js` é o mesmo da seção 9.
 **12.1 Backend: `api.js`**
 
 A API faz três coisas: recebe os arquivos, cria um job por PDF e responde na hora com `202`. Ela nunca extrai texto — esse trabalho é dos workers.
+*Perguntas para discussão*
+
+1. Quando n dobra (20 mil → 40 mil → 80 mil), por quanto o tempo de desenfileirar é multiplicado em cada implementação? Relacione com O(n²) para esvaziar a `FilaArray` e O(n) para esvaziar a `FilaEncadeada`.
+2. Por que o tempo de enfileirar é parecido nas duas?
+3. Com 5 mil e 10 mil itens, a `FilaArray` pode parecer quase tão rápida quanto a encadeada. Por quê? Dica: o desempenho real também depende de otimizações do motor V8, que executa o JavaScript no Node.js e no Chrome; pesquise como ele trata o `shift` em arrays pequenos.
+4. Por que o script repete cada medição e usa a mediana, em vez de medir uma vez só? E para que serve o aquecimento antes das medições?
+5. Por que `Date.now()` não é uma boa escolha para estas medições?
+6. **Memória.** Adapte o script para ler `process.memoryUsage().heapUsed` antes e depois de enfileirar 1 milhão de números em cada fila. Rode com `node --expose-gc` e chame `globalThis.gc()` antes de cada leitura. Qual fila usa mais memória, e por quê?
+7. **Desafio.** Inclua a classe `Fila` (índices) da seção 5.1 em `implementacoes` e compare as três. Depois, rode o teste no console do navegador (DevTools) e compare com o Node.js.
 
 ```javascript
 // api.js — backend: recebe os PDFs do formulário e cria um job por arquivo
@@ -1478,6 +1487,15 @@ app.use((erro, req, res, next) => res.status(400).json({ erro: erro.message }));
 
 app.listen(3000, () => console.log('Formulário em http://localhost:3000'));
 ```
+*Perguntas para discussão*
+
+1. Quando n dobra (20 mil → 40 mil → 80 mil), por quanto o tempo de desenfileirar é multiplicado em cada implementação? Relacione com O(n²) para esvaziar a `FilaArray` e O(n) para esvaziar a `FilaEncadeada`.
+2. Por que o tempo de enfileirar é parecido nas duas?
+3. Com 5 mil e 10 mil itens, a `FilaArray` pode parecer quase tão rápida quanto a encadeada. Por quê? Dica: o desempenho real também depende de otimizações do motor V8, que executa o JavaScript no Node.js e no Chrome; pesquise como ele trata o `shift` em arrays pequenos.
+4. Por que o script repete cada medição e usa a mediana, em vez de medir uma vez só? E para que serve o aquecimento antes das medições?
+5. Por que `Date.now()` não é uma boa escolha para estas medições?
+6. **Memória.** Adapte o script para ler `process.memoryUsage().heapUsed` antes e depois de enfileirar 1 milhão de números em cada fila. Rode com `node --expose-gc` e chame `globalThis.gc()` antes de cada leitura. Qual fila usa mais memória, e por quê?
+7. **Desafio.** Inclua a classe `Fila` (índices) da seção 5.1 em `implementacoes` e compare as três. Depois, rode o teste no console do navegador (DevTools) e compare com o Node.js.
 
 Pontos para discutir em aula:
 
